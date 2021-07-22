@@ -10,16 +10,15 @@ def run():
     # Set background
     screen.fill((255, 255, 255))
 
-    # Draw text
-    font = pygame.font.SysFont("Helvetica", 24)
-    text_surface = font.render("HERE'S A WINDOW", False, (0, 0, 0))
-    screen.blit(text_surface, (100, 100))
-    text_surface = font.render("I FEEL TIRED", False, (0, 255, 255))
-    screen.blit(text_surface, (100, 300))
+    # Draw bike
+    bike = pygame.image.load("ui/bike.png")
+    bike = pygame.transform.scale(bike, (125, 125))
+    screen.blit(bike, (330, 150))
 
+    # Draw car
     car = pygame.image.load("ui/car.png")
     car = pygame.transform.scale(car, (50, 50))
-    screen.blit(car, (100, 124))
+    screen.blit(car, (370, 400))
 
     # Main loop
     running = True
