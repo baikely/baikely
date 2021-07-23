@@ -7,7 +7,7 @@ from gpiozero.exc import BadPinFactory
 def main():
     try:
         sensors = [
-            UltrasonicSensor(20, 21, 240, 300)
+            UltrasonicSensor(echo=20, trigger=21, max_distance=4, start_angle=240, end_angle=300)
         ]
     except BadPinFactory:
         print("Couldn't load a default pin factory. You're probably not running this on a Pi.")

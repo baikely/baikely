@@ -5,8 +5,6 @@ import math
 from ui.ultrasonic import UltrasonicSensor
 from typing import List
 
-distance = 100
-
 # Load images
 bike = pygame.image.load("ui/bike.png")
 bike = pygame.transform.scale(bike, (75, 75))
@@ -16,13 +14,13 @@ car = pygame.transform.scale(car, (29, 64))
 # Handles an event passed in from another of the processes.
 def handle_event(event: dict):
     if event["type"] == "test":
-        print(event["test"])
+        pass
 
 def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: float, start_angle: float, end_angle: float):
     surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
     center_x = 237
     center_y = 137
-    radius = distance // 4
+    radius = distance * 100 // 4
     mid_angle = (start_angle + end_angle) / 2
     pygame.draw.arc(
         surface,
@@ -32,7 +30,7 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
         math.radians(end_angle),
         200
     )
-    text = font.render(f"{math.floor(distance)} cm", True, (0, 0, 0))
+    text = font.render(f"{math.floor(distance * 100)} cm", True, (0, 0, 0))
     text_x = center_x + math.cos(math.radians(mid_angle)) * (radius + 6)
     text_y = center_y - math.sin(math.radians(mid_angle)) * (radius + 6)
     if mid_angle < 240:
@@ -48,7 +46,9 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
     screen.blit(bike, (200, 100))
     screen.blit(car, (225, 250))
     for sensor in sensors:
-        draw_ultrasonic(screen, font, sensor.distance, sensor.start_angle, sensor.end_angle)
+        distance = sensor.distance()
+        if distance is not None:
+            draw_ultrasonic(screen, font, distance, sensor.start_angle, sensor.end_angle)
 
 # Creates the window and updates it continually.
 def run(queue: Queue, sensors: List[UltrasonicSensor]):
