@@ -31,6 +31,11 @@ def run(queue: Queue):
     # Main loop
     running = True
     while running:
+        # Read any Pygame events.
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
         # Read any incoming events from the shared queue.
         while True:
             try:
