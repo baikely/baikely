@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue, Event
 from ui.main import run as run_ui
-from testprocess.main import run as run_testprocess
+from TFLite_detection_webcam import run as run_cv
 from ui.ultrasonic import UltrasonicSensor
 from gpiozero import Device
 from gpiozero.pins.pigpio import PiGPIOFactory
@@ -19,6 +19,9 @@ def main():
 
     queue = Queue()
     exit_event = Event()
+
+    cv = Process(target=run_cv, args=(queue, exit_event))
+    cv.start()
 
     run_ui(queue, sensors)
     exit_event.set()
