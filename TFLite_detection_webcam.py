@@ -112,6 +112,10 @@ def run(queue, exit_event):
     if labels[0] == '???':
         del(labels[0])
 
+    # Start the window thread.
+    cv2.startWindowThread()
+    cv2.namedWindow("Object detector")
+
     # Load the Tensorflow Lite model.
     # If using Edge TPU, use special load_delegate argument
     if use_TPU:
@@ -230,6 +234,10 @@ def run(queue, exit_event):
         t2 = cv2.getTickCount()
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
+
+        cv2.waitKey(1)
+
+        print("Frame")
 
     # Clean up
     cv2.destroyAllWindows()
