@@ -20,7 +20,7 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
     surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
     center_x = 237
     center_y = 137
-    radius = distance * 100 // 4
+    radius = 20 + (distance * 100 // 6)
     mid_angle = (start_angle + end_angle) / 2
     pygame.draw.arc(
         surface,
@@ -28,7 +28,7 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
         [center_x - radius, center_y - radius, radius * 2, radius * 2],
         math.radians(start_angle),
         math.radians(end_angle),
-        200
+        radius
     )
     text = font.render(f"{math.floor(distance * 100)} cm", True, (0, 0, 0))
     text_x = center_x + math.cos(math.radians(mid_angle)) * (radius + 6)
