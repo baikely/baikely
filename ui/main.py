@@ -1,6 +1,12 @@
+from queue import Empty
 import pygame
+from multiprocessing import Queue
 
-def run():
+def handle_event(event: dict):
+    if event["type"] == "test":
+        print(event["test"])
+
+def run(queue: Queue):
     # Set up
     clock = pygame.time.Clock()
     pygame.init()
@@ -24,5 +30,13 @@ def run():
     # Main loop
     running = True
     while running:
+        while True:
+            try:
+                handle_event(queue.get_nowait())
+            except Empty:
+                break
+
+        # Perform any UI updates here.
+
         pygame.display.flip() # Update display
         clock.tick(60) # Use 60 FPS
