@@ -25,7 +25,7 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
     mid_angle = (start_angle + end_angle) / 2
     pygame.draw.arc(
         surface,
-        (255, max(0, min(255, int((distance - 0.5) / 4 * 255))), 0, 100),
+        (255, max(0, min(255, int((distance - 0.5) / 4 * 255))), 0, 160),
         [center_x - radius, center_y - radius, radius * 2, radius * 2],
         math.radians(start_angle),
         math.radians(end_angle),
