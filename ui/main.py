@@ -1,6 +1,9 @@
 from queue import Empty
 import pygame
 from multiprocessing import Queue
+import math
+
+distance = 100
 
 # Load images
 bike = pygame.image.load("ui/bike.png")
@@ -13,11 +16,38 @@ def handle_event(event: dict):
     if event["type"] == "test":
         print(event["test"])
 
+def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: float, start_angle: float, end_angle: float):
+    surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
+    center_x = 237
+    center_y = 137
+    radius = distance // 4
+    mid_angle = (start_angle + end_angle) / 2
+    pygame.draw.arc(
+        surface,
+        (255, 0, 0, 100),
+        [center_x - radius, center_y - radius, radius * 2, radius * 2],
+        math.radians(start_angle),
+        math.radians(end_angle),
+        200
+    )
+    text = font.render(f"{math.floor(distance)} cm", True, (0, 0, 0))
+    text_x = center_x + math.cos(math.radians(mid_angle)) * (radius + 6)
+    text_y = center_y - math.sin(math.radians(mid_angle)) * (radius + 6)
+    if mid_angle < 240:
+        text_x -= text.get_width()
+    elif mid_angle < 300:
+        text_x -= text.get_width() / 2
+    screen.blit(surface, (0, 0))
+    screen.blit(text, (text_x, text_y))
+
 # Draws the UI.
-def draw(screen: pygame.Surface):
+def draw(screen: pygame.Surface, font: pygame.font.Font):
     screen.fill((255, 255, 255))
     screen.blit(bike, (200, 100))
     screen.blit(car, (225, 250))
+    draw_ultrasonic(screen, font, 200, 180, 240)
+    draw_ultrasonic(screen, font, 100, 240, 300)
+    draw_ultrasonic(screen, font, 300, 300, 360)
 
 # Creates the window and updates it continually.
 def run(queue: Queue):
@@ -27,7 +57,8 @@ def run(queue: Queue):
     pygame.display.set_caption("Baike")
     pygame.font.init()
     screen = pygame.display.set_mode((480, 320))
-
+    font = pygame.font.SysFont("Helvetica", 18)
+    
     # Main loop
     running = True
     while running:
@@ -44,7 +75,7 @@ def run(queue: Queue):
                 break
 
         # Perform any UI updates here.
-        draw(screen)
-
+        draw(screen, font)
+        
         pygame.display.flip() # Update display
         clock.tick(60) # Use 60 FPS
