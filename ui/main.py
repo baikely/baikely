@@ -2,10 +2,12 @@ from queue import Empty
 import pygame
 from multiprocessing import Queue
 
+# Handles an event passed in from another of the processes.
 def handle_event(event: dict):
     if event["type"] == "test":
         print(event["test"])
 
+# Creates the window and updates it continually.
 def run(queue: Queue):
     # Set up
     clock = pygame.time.Clock()
@@ -30,6 +32,7 @@ def run(queue: Queue):
     # Main loop
     running = True
     while running:
+        # Read any incoming events from the shared queue.
         while True:
             try:
                 handle_event(queue.get_nowait())
