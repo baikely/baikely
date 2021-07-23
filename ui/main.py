@@ -2,6 +2,8 @@ from queue import Empty
 import pygame
 from multiprocessing import Queue
 import math
+from ui.ultrasonic import UltrasonicSensor
+from typing import List
 
 distance = 100
 
@@ -41,16 +43,15 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
     screen.blit(text, (text_x, text_y))
 
 # Draws the UI.
-def draw(screen: pygame.Surface, font: pygame.font.Font):
+def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[UltrasonicSensor]):
     screen.fill((255, 255, 255))
     screen.blit(bike, (200, 100))
     screen.blit(car, (225, 250))
-    draw_ultrasonic(screen, font, 200, 180, 240)
-    draw_ultrasonic(screen, font, 100, 240, 300)
-    draw_ultrasonic(screen, font, 300, 300, 360)
+    for sensor in sensors:
+        draw_ultrasonic(screen, font, sensor.distance, sensor.start_angle, sensor.end_angle)
 
 # Creates the window and updates it continually.
-def run(queue: Queue):
+def run(queue: Queue, sensors: List[UltrasonicSensor]):
     # Set up
     clock = pygame.time.Clock()
     pygame.init()
@@ -75,7 +76,7 @@ def run(queue: Queue):
                 break
 
         # Perform any UI updates here.
-        draw(screen, font)
+        draw(screen, font, sensors)
         
         pygame.display.flip() # Update display
         clock.tick(60) # Use 60 FPS
