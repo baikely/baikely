@@ -3,33 +3,44 @@ import pygame
 from multiprocessing import Queue
 import math
 from ui.ultrasonic import UltrasonicSensor
-from typing import List
+from typing import List, Tuple
 
 # Load images
 bg = pygame.image.load("ui/bg2.jpeg")
-bike = pygame.image.load("ui/bike.png")
-bike = pygame.transform.scale(bike, (75, 75))
+bike = pygame.image.load("ui/bike-teal.png")
+bike = pygame.transform.scale(bike, (72, 128))
 car = pygame.image.load("ui/car.png")
 car = pygame.transform.scale(car, (29, 64))
 
 car_on_left = False
 car_on_right = False
+bike_on_left = False
+bike_on_right = False
 
 # Handles an event passed in from another of the processes.
 def handle_event(event: dict):
     global car_on_left
     global car_on_right
+    global bike_on_left
+    global bike_on_right
     if event["type"] == "cv":
         car_on_left = False
         car_on_right = False
+        bike_on_left = False
+        bike_on_right = False
         for detection in event["detections"]:
             if detection["object"] == "car":
                 if detection["position"] == "left":
                     car_on_left = True
                 else:
                     car_on_right = True
+            elif detection["object"] == "bicycle":
+                if detection["position"] == "left":
+                    bike_on_left = True
+                else:
+                    bike_on_right = True
 
-def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: float, start_angle: float, end_angle: float):
+def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, center: Tuple[int, int], distance: float, start_angle: float, end_angle: float):
     surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
     center_x = 237
     center_y = 137
@@ -57,7 +68,8 @@ def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: fl
 def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[UltrasonicSensor]):
     screen.fill((0, 0, 0))
     screen.blit(bg, (0, -10))
-    screen.blit(bike, (200, 100))
+    center = (screen.get_width() // 2, screen.get_height() // 2 - 50)
+    screen.blit(bike, (center[0] - bike.get_width() // 2, center[1] - bike.get_height() // 2))
     if car_on_left:
         screen.blit(car, (screen.get_width() / 2 - 50 - car.get_width() / 2, 225))
     if car_on_right:
@@ -65,7 +77,7 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
     for sensor in sensors:
         distance = sensor.distance()
         if distance is not None:
-            draw_ultrasonic(screen, font, distance, sensor.start_angle, sensor.end_angle)
+            draw_ultrasonic(screen, font, center, distance, sensor.start_angle, sensor.end_angle)
 
 # Creates the window and updates it continually.
 def run(queue: Queue, sensors: List[UltrasonicSensor]):
