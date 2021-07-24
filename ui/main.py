@@ -12,10 +12,20 @@ bike = pygame.transform.scale(bike, (75, 75))
 car = pygame.image.load("ui/car.png")
 car = pygame.transform.scale(car, (29, 64))
 
+car_on_left = False
+car_on_right = False
+
 # Handles an event passed in from another of the processes.
 def handle_event(event: dict):
-    if event["type"] == "test":
-        pass
+    if event["type"] == "cv":
+        car_on_left = False
+        car_on_right = False
+        for detection in event["detections"]:
+            if detection["object"] == "car":
+                if detection["position"] == "left":
+                    car_on_left = True
+                else:
+                    car_on_right = True
 
 def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, distance: float, start_angle: float, end_angle: float):
     surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
@@ -46,7 +56,10 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
     screen.fill((0, 0, 0))
     screen.blit(bg, (0, -10))
     screen.blit(bike, (200, 100))
-    screen.blit(car, (225, 250))
+    if car_on_left:
+        screen.blit(car, (225, screen.get_width() - 50 - car.get_width() / 2))
+    if car_on_right:
+        screen.blit(car, (225, screen.get_width() + 50 - car.get_width() / 2))
     for sensor in sensors:
         distance = sensor.distance()
         if distance is not None:
