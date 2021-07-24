@@ -10,7 +10,7 @@ def main():
     try:
         Device.pin_factory = PiGPIOFactory()
         sensors = [
-            UltrasonicSensor(echo=20, trigger=21, max_distance=5, start_angle=240, end_angle=300)
+            # UltrasonicSensor(echo=20, trigger=21, max_distance=5, start_angle=240, end_angle=300)
         ]
     except:
         print("Error:", sys.exc_info()[0])
