@@ -3,12 +3,15 @@ import pygame
 from multiprocessing import Queue
 import math
 from ui.ultrasonic import UltrasonicSensor
+from ui.mode import Mode
 from typing import List, Tuple
 
 # Load images
 bg = pygame.image.load("ui/bg2.jpeg")
 bike = pygame.image.load("ui/bike-teal.png")
 bike = pygame.transform.scale(bike, (72, 128))
+bike_detected = pygame.image.load("ui/bike-red.png")
+bike_detected = pygame.transform.scale(bike_detected, (54, 96))
 car = pygame.image.load("ui/car.png")
 car = pygame.transform.scale(car, (29, 64))
 
@@ -42,21 +45,19 @@ def handle_event(event: dict):
 
 def draw_ultrasonic(screen: pygame.Surface, font: pygame.font.Font, center: Tuple[int, int], distance: float, start_angle: float, end_angle: float):
     surface = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
-    center_x = 237
-    center_y = 137
     radius = int(30 + distance * 100 / 5)
     mid_angle = (start_angle + end_angle) / 2
     pygame.draw.arc(
         surface,
         (255, max(0, min(255, int((distance - 0.5) / 4 * 255))), 0, 160),
-        [center_x - radius, center_y - radius, radius * 2, radius * 2],
+        [center[0] - radius, center[1] - radius, radius * 2, radius * 2],
         math.radians(start_angle),
         math.radians(end_angle),
         radius
     )
     text = font.render(f"{math.floor(distance * 100)} cm", True, (255, 255, 255))
-    text_x = center_x + math.cos(math.radians(mid_angle)) * (radius + 6)
-    text_y = center_y - math.sin(math.radians(mid_angle)) * (radius + 6)
+    text_x = center[0] + math.cos(math.radians(mid_angle)) * (radius + 6)
+    text_y = center[1] - math.sin(math.radians(mid_angle)) * (radius + 6)
     if mid_angle < 240:
         text_x -= text.get_width()
     elif mid_angle < 300:
@@ -74,6 +75,10 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
         screen.blit(car, (screen.get_width() / 2 - 50 - car.get_width() / 2, 225))
     if car_on_right:
         screen.blit(car, (screen.get_width() / 2 + 50 - car.get_width() / 2, 225))
+    if bike_on_left:
+        screen.blit(bike_detected, (screen.get_width() / 2 - 100 - bike_detected.get_width() / 2, 209))
+    if bike_on_right:
+        screen.blit(bike_detected, (screen.get_width() / 2 + 100 - bike_detected.get_width() / 2, 209))
     for sensor in sensors:
         distance = sensor.distance()
         if distance is not None:
