@@ -112,10 +112,6 @@ def run(queue, exit_event):
     if labels[0] == '???':
         del(labels[0])
 
-    # Start the window thread.
-    cv2.startWindowThread()
-    cv2.namedWindow("Object detector")
-
     # Load the Tensorflow Lite model.
     # If using Edge TPU, use special load_delegate argument
     if use_TPU:
@@ -227,17 +223,10 @@ def run(queue, exit_event):
         # Draw framerate in corner of frame
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
-        # All the results have been drawn on the frame, so it's time to display it.
-        cv2.imshow('Object detector', frame)
-
         # Calculate framerate
         t2 = cv2.getTickCount()
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
-
-        cv2.waitKey(1)
-
-        print("Frame")
 
     # Clean up
     cv2.destroyAllWindows()

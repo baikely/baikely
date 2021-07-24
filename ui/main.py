@@ -59,9 +59,9 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
     screen.blit(bg, (0, -10))
     screen.blit(bike, (200, 100))
     if car_on_left:
-        screen.blit(car, (225, screen.get_width() - 50 - car.get_width() / 2))
+        screen.blit(car, (screen.get_width() / 2 - 50 - car.get_width() / 2, 225))
     if car_on_right:
-        screen.blit(car, (225, screen.get_width() + 50 - car.get_width() / 2))
+        screen.blit(car, (screen.get_width() / 2 + 50 - car.get_width() / 2, 225))
     for sensor in sensors:
         distance = sensor.distance()
         if distance is not None:
