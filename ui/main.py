@@ -17,6 +17,8 @@ car_on_right = False
 
 # Handles an event passed in from another of the processes.
 def handle_event(event: dict):
+    global car_on_left
+    global car_on_right
     if event["type"] == "cv":
         car_on_left = False
         car_on_right = False
