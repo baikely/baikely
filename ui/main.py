@@ -1,10 +1,15 @@
 from queue import Empty
+from ui.alert import Alert
 import pygame
 from multiprocessing import Queue
 import math
 from ui.ultrasonic import UltrasonicSensor
 from ui.mode import Mode
 from typing import List, Tuple
+import os
+
+URBAN_THRESHOLD = 0.5
+SUBURBAN_THRESHOLD = 2
 
 # Load images
 bg = pygame.image.load("ui/bg2.jpeg")
@@ -19,6 +24,7 @@ car_on_left = False
 car_on_right = False
 bike_on_left = False
 bike_on_right = False
+mode = Mode.SUBURBAN
 
 # Handles an event passed in from another of the processes.
 def handle_event(event: dict):
@@ -84,15 +90,22 @@ def draw(screen: pygame.Surface, font: pygame.font.Font, sensors: List[Ultrasoni
         if distance is not None:
             draw_ultrasonic(screen, font, center, distance, sensor.start_angle, sensor.end_angle)
 
+
+
 # Creates the window and updates it continually.
+# Also sounds alerts when needed.
 def run(queue: Queue, sensors: List[UltrasonicSensor]):
     # Set up
     clock = pygame.time.Clock()
     pygame.init()
     pygame.display.set_caption("Baike")
     pygame.font.init()
+    pygame.mixer.init()
+    beep = pygame.mixer.Sound("ui/beep.mp3")
     screen = pygame.display.set_mode((480, 320))
     font = pygame.font.SysFont("Helvetica", 18)
+    
+    distance_alert = Alert(lambda: beep.play(), debounce_time=0.5)
     
     # Main loop
     running = True
@@ -111,6 +124,9 @@ def run(queue: Queue, sensors: List[UltrasonicSensor]):
 
         # Perform any UI updates here.
         draw(screen, font, sensors)
+        threshold = URBAN_THRESHOLD if mode == Mode.URBAN else SUBURBAN_THRESHOLD
+        if os.getenv("BEEPBEEPBEEP") or any(sensor.distance <= threshold for sensor in sensors):
+            distance_alert.alert()
         
         pygame.display.flip() # Update display
         clock.tick(60) # Use 60 FPS
