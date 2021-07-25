@@ -199,11 +199,9 @@ def run(queue, exit_event):
                     if(((xmin+xmax)/2) <= 640):
                         detections.append({"object": "car", "position": "right"})
                         print("car right")
-                        os.system('espeak "car right"')
                     if(((xmin+xmax)/2) > 640):
                         detections.append({"object": "car", "position": "left"})
                         print("car left")
-                        os.system('espeak "car left"')
                 
                 if object_name == "bicycle":
                     # label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
@@ -216,11 +214,9 @@ def run(queue, exit_event):
                     if(((xmin+xmax)/2) <= 640):
                         detections.append({"object": "bicycle", "position": "right"})
                         print("bicycle right")
-                        os.system('espeak "bicycle right"')
                     if(((xmin+xmax)/2) > 640):
                         detections.append({"object": "bicycle", "position": "left"})
                         print("bicycle left")
-                        os.system('espeak "bicycle left"')
 
         queue.put({"type": "cv", "detections": detections})
 

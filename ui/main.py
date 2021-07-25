@@ -7,6 +7,7 @@ from ui.ultrasonic import UltrasonicSensor
 from ui.mode import Mode
 from typing import List, Tuple
 import os
+import subprocess
 
 URBAN_THRESHOLD = 0.5
 SUBURBAN_THRESHOLD = 2
@@ -105,7 +106,17 @@ def run(queue: Queue, sensors: List[UltrasonicSensor]):
     screen = pygame.display.set_mode((480, 320))
     font = pygame.font.SysFont("Helvetica", 18)
     
-    distance_alert = Alert(lambda: beep.play(), debounce_time=0.5)
+    global play_vehicle_alert
+    play_vehicle_alert = False
+    def on_vehicle_alert():
+        global play_vehicle_alert
+        play_vehicle_alert = True
+
+    distance_alert = Alert(beep.play, debounce_time=0.5)
+    car_left_alert = Alert(on_vehicle_alert, debounce_time=5)
+    car_right_alert = Alert(on_vehicle_alert, debounce_time=5)
+    bike_left_alert = Alert(on_vehicle_alert, debounce_time=5)
+    bike_right_alert = Alert(on_vehicle_alert, debounce_time=5)
     
     # Main loop
     running = True
@@ -126,7 +137,29 @@ def run(queue: Queue, sensors: List[UltrasonicSensor]):
         draw(screen, font, sensors)
         threshold = URBAN_THRESHOLD if mode == Mode.URBAN else SUBURBAN_THRESHOLD
         if os.getenv("BEEPBEEPBEEP") or any(sensor.distance <= threshold for sensor in sensors):
-            distance_alert.alert()
+            distance_alert.set()
+            distance_alert.reset()
+        car_left_alert.update(car_on_left)
+        car_right_alert.update(car_on_right)
+        bike_left_alert.update(bike_on_left)
+        bike_right_alert.update(bike_on_right)
+        if play_vehicle_alert:
+            statement = ""
+            if car_on_left and car_on_right:
+                statement += "Cars on both sides. "
+            elif car_on_left:
+                statement += "Car on left. "
+            elif car_on_right:
+                statement += "Car on right. "
+            if bike_on_left and bike_on_right:
+                statement += "Bikes on both sides. "
+            elif bike_on_left:
+                statement += "Bike on left. "
+            elif bike_on_right:
+                statement += "Bike on right. "
+            if len(statement) > 0:
+                subprocess.Popen(["espeak", statement])
+            play_vehicle_alert = False
         
         pygame.display.flip() # Update display
         clock.tick(60) # Use 60 FPS
