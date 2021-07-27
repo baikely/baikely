@@ -1,4 +1,4 @@
 pygame==2.0.1
 gpiozero==1.6.2
 pigpio==1.78
-opencv-python==3.4.6.27
+opencv-python==3.4.15.55
