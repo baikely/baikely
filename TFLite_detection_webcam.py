@@ -56,6 +56,8 @@ class VideoStream:
 
             # Otherwise, grab the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
+            if os.getenv("ROTATE_CAMERA") is not None:
+                self.frame = cv2.rotate(self.frame, cv2.ROTATE_180)
 
     def read(self):
 	# Return the most recent frame
