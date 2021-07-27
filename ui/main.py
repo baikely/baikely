@@ -105,6 +105,7 @@ def run(queue: Queue, sensors: List[UltrasonicSensor]):
     beep = pygame.mixer.Sound("ui/beep.mp3")
     screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
     font = pygame.font.SysFont("Helvetica", 18)
+    pygame.mouse.set_visible(False)
     
     global play_vehicle_alert
     play_vehicle_alert = False
