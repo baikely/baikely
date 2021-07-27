@@ -23,7 +23,11 @@ def main():
     cv = Process(target=run_cv, args=(queue, exit_event))
     cv.start()
 
-    run_ui(queue, sensors)
+    try:
+        run_ui(queue, sensors)
+    except KeyboardInterrupt:
+        print("Stopping...")
+        pass
     exit_event.set()
 
 if __name__ == "__main__":
